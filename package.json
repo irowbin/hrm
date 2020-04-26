@@ -5,9 +5,10 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "bootstrap": "^4.4.1",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
@@ -50,7 +51,12 @@
     "parserOptions": {
       "ecmaVersion": 2020
     },
-    "rules": {}
+    "rules": {
+      "eqeqeq": "off",
+      "curly": "warn",
+      "quotes": ["warn", "single"],
+      "indent": "warn"
+    }
   },
   "browserslist": [
     "> 1%",

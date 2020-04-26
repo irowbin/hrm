@@ -1,32 +1,26 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div id="app" class="container container__mod pt-2 mb-2">
+        <app-navbar></app-navbar>
+        <router-view/>
     </div>
-    <router-view/>
-  </div>
 </template>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+<script>
+import Navbar from '@/components/layout/navbar'
+export default {
+  components: {
+    'app-navbar': Navbar
   }
 }
+</script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Kumar+One+Outline&family=Monoton&display=swap');
+
+    .logo {
+        font-family: 'Audiowide', cursive;
+    }
+
+    .container__mod {
+        min-height: 98vh;
+        box-shadow: 0 0 10px 0 #c9d7e2;
+    }
 </style>
