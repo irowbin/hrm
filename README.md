@@ -1,4 +1,4 @@
-# hrm
+# my-app
 
 ## Project setup
 ```
