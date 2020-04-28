@@ -10,7 +10,7 @@ const mutations = {
      * Initializes employees with payload
      */
     'INIT_EMPLOYEE'(state, payload) {
-
+        if(state.employees.length> 0) return;
         const copy = payload.slice();
         // simulation auto increment of ID as primary KEY
         copy.forEach((e, index) => {

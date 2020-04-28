@@ -97,7 +97,18 @@
                 deleteEmployee: 'removeEmployee'
             }),
             ...mapGetters('employee', ['employeeData']),
-
+            notify(text, color){
+                console.log(this.$q)
+                this.$q.notify({
+                    color:color,
+                    textColor:'white',
+                    icon: 'info',
+                    message: text,
+                    position:'top-right',
+                    multiLine: true,
+                    timeout: 10000
+                })
+            },
             // toggle form dialog
             toggleForm(id) {
                 this.selectedId = id;
@@ -106,10 +117,12 @@
             formClosed() {
                 this.isFormOpened = false;
                 this.selectedId = 0;
+                this.notify('Successfully Updated','teal');
             },
             deleteConfirm(id) {
                 this.showDeleteConfirm = id > 0;
                 this.selectedId = id;
+
             },
             deleted(isdelete) {
                 if(isdelete) {
@@ -117,7 +130,7 @@
                 }
                 this.showDeleteConfirm = false;
                 this.selectedId = 0;
-                // TODO: show a toast
+                this.notify('Successfully Deleted','pink');
             }
         },
         mounted() {
