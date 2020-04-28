@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="email" class="col-sm-4 col-form-label">Last Name</label>
+                    <label for="email" class="col-sm-4 col-form-label">Email</label>
                     <div class="col-sm-8">
                         <input type="email" v-model="employee.email" class="form-control form-control-sm" id="email">
                     </div>
@@ -70,17 +70,17 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="email" class="col-sm-4 col-form-label">Last Name</label>
+                    <label for="uname" class="col-sm-4 col-form-label">Last Name</label>
                     <div class="col-sm-8">
                         <input type="text" v-model="employee.account.username" class="form-control form-control-sm"
-                               id="email">
+                               id="uname">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="age" class="col-sm-4 col-form-label">Age</label>
+                    <label for="pw" class="col-sm-4 col-form-label">Password</label>
                     <div class="col-sm-8">
                         <input type="password" v-model="employee.account.password" class="form-control form-control-sm"
-                               id="age">
+                               id="pw">
                     </div>
                 </div>
             </form>
