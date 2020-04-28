@@ -114,9 +114,9 @@
                 this.selectedId = id;
                 this.isFormOpened = !this.isFormOpened;
             },
-            formClosed() {
+            formClosed(isCancelled) {
                 this.isFormOpened = false;
-
+                if(!isCancelled)
                 this.notify(`Successfully ${this.selectedId > 0 ? 'Updated': 'Created'}`,'positive');
                 this.selectedId = 0;
             },
@@ -128,10 +128,11 @@
             deleted(isdelete) {
                 if(isdelete) {
                     this.deleteEmployee(this.selectedId);
+                    this.notify('Successfully Deleted','negative');
                 }
                 this.showDeleteConfirm = false;
                 this.selectedId = 0;
-                this.notify('Successfully Deleted','negative');
+
             }
         },
         mounted() {

@@ -85,7 +85,7 @@
                 </div>
             </form>
             <a href="#" class="card-link" @click.prevent="saveChanges">Save Changes</a>
-            <a href="#" class="card-link" v-close-popup @click="onClose">Cancel</a>
+            <a href="#" class="card-link" v-close-popup @click="onClose(true)">Cancel</a>
         </div>
     </div>
 </template>
@@ -116,8 +116,8 @@
         methods: {
             ...mapGetters('employee', ['getEmployee']),
             ...mapActions('employee', ['getEmployeeById', 'updateEmployee', 'addEmployee']),
-            onClose() {
-                this.$emit('close')
+            onClose(isCancelled) {
+                this.$emit('close', isCancelled)
             },
             saveChanges() {
                 if (this.id > 0) {
@@ -125,7 +125,7 @@
                 } else {
                     this.addEmployee(this.employee)
                 }
-                this.onClose();
+                this.onClose(false);
             },
             initEdit() {
                 if (this.id <= 0) return;
