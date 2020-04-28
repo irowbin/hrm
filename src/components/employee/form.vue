@@ -1,103 +1,146 @@
 <template>
-    <div :class="{'form-reposition':isOpen}">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Employee Form</h5>
-                <form>
-                    <div class="form-group row">
-                        <label for="fname" class="col-sm-4 col-form-label">First Name</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control form-control-sm" id="fname">
-                        </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Employee Form</h5>
+            <form>
+                <div class="row">
+                    <div class="col-12 h6 text-indigo bg-light-blue-1">
+                        Personal Info
                     </div>
-                    <div class="form-group row">
-                        <label for="lname" class="col-sm-4 col-form-label">Last Name</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control form-control-sm" id="lname">
-                        </div>
+                </div>
+                <div class="form-group row">
+                    <label for="fname" class="col-sm-4 col-form-label">First Name</label>
+                    <div class="col-sm-8">
+                        <input type="text" v-model="employee.firstName" class="form-control form-control-sm" id="fname">
                     </div>
-                    <div class="form-group row">
-                        <label for="age" class="col-sm-4 col-form-label">Age</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control form-control-sm" id="age">
-                        </div>
+                </div>
+                <div class="form-group row">
+                    <label for="lname" class="col-sm-4 col-form-label">Last Name</label>
+                    <div class="col-sm-8">
+                        <input type="text" v-model="employee.lastName" class="form-control form-control-sm" id="lname">
                     </div>
-                    <fieldset class="form-group">
-                        <div class="row">
-                            <legend class="col-form-label col-sm-4 pt-0">Gender</legend>
-                            <div class="col-sm-8">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gridRadios" id="male"
-                                           value="male">
-                                    <label class="form-check-label" for="male">
-                                        Male
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gridRadios" id="female"
-                                           value="female">
-                                    <label class="form-check-label" for="female">
-                                        Female
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gridRadios" id="other"
-                                           value="other">
-                                    <label class="form-check-label" for="other">
-                                        Other
-                                    </label>
-                                </div>
+                </div>
+                <div class="form-group row">
+                    <label for="email" class="col-sm-4 col-form-label">Last Name</label>
+                    <div class="col-sm-8">
+                        <input type="email" v-model="employee.email" class="form-control form-control-sm" id="email">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="age" class="col-sm-4 col-form-label">Age</label>
+                    <div class="col-sm-8">
+                        <input type="number" v-model="employee.age" class="form-control form-control-sm" id="age">
+                    </div>
+                </div>
+                <fieldset class="form-group">
+                    <div class="row">
+                        <legend class="col-form-label col-sm-4 pt-0 px-0">Gender</legend>
+                        <div class="col-sm-8">
+                            <div class="form-check">
+                                <input v-model="employee.gender" class="form-check-input" type="radio" name="gridRadios"
+                                       id="male"
+                                       value="male">
+                                <label class="form-check-label" for="male">
+                                    Male
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input v-model="employee.gender" class="form-check-input" type="radio" name="gridRadios"
+                                       id="female"
+                                       value="female">
+                                <label class="form-check-label" for="female">
+                                    Female
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input v-model="employee.gender" class="form-check-input" type="radio" name="gridRadios"
+                                       id="other"
+                                       value="other">
+                                <label class="form-check-label" for="other">
+                                    Other
+                                </label>
                             </div>
                         </div>
-                    </fieldset>
-                </form>
-                <a href="#" class="card-link">Save Changes</a>
-                <a href="#" class="card-link" @click.prevent="onClose">Cancel</a>
-            </div>
+                    </div>
+                </fieldset>
+
+                <div class="row">
+                    <div class="col-12 h6 text-indigo bg-light-blue-1">
+                        Account Info
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="email" class="col-sm-4 col-form-label">Last Name</label>
+                    <div class="col-sm-8">
+                        <input type="text" v-model="employee.account.username" class="form-control form-control-sm"
+                               id="email">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="age" class="col-sm-4 col-form-label">Age</label>
+                    <div class="col-sm-8">
+                        <input type="password" v-model="employee.account.password" class="form-control form-control-sm"
+                               id="age">
+                    </div>
+                </div>
+            </form>
+            <a href="#" class="card-link" @click.prevent="saveChanges">Save Changes</a>
+            <a href="#" class="card-link" v-close-popup @click="onClose">Cancel</a>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapGetters, mapActions} from 'vuex'
+
     export default {
         name: "app-form",
-        props: ['isOpen'],
+        props: ['id'],
+        data() {
+            return {
+                // TODO: model validation
+                employee: {
+                    id: 0,
+                    firstName: null,
+                    lastName: null,
+                    age: null,
+                    gender: null,
+                    email: null,
+                    account: {
+                        username: null,
+                        password: null
+                    }
+                }
+            }
+        },
         methods: {
+            ...mapGetters('employee', ['getEmployee']),
+            ...mapActions('employee', ['getEmployeeById', 'updateEmployee', 'addEmployee']),
             onClose() {
                 this.$emit('close')
+            },
+            saveChanges() {
+                if (this.id > 0) {
+                    this.updateEmployee(this.employee);
+                } else {
+                    this.addEmployee(this.employee)
+                }
+                this.onClose();
+            },
+            initEdit() {
+                if (this.id <= 0) return;
+
+                this.getEmployeeById(this.id);
+                // lets not mutate the origin
+                this.employee = {...this.getEmployee()};
             }
+        },
+        mounted() {
+            this.initEdit()
         }
     }
 </script>
 
 <style scoped>
-    .form-reposition {
-        position: absolute;
-        /*top: 10px;*/
-        /*bottom: 10px;*/
-        /*left: 10px;*/
-        /*right: 10px;*/
-        max-height: calc(100vh - 20px);
-        max-width: calc(100% - 20px);
-        min-width: 30%;
-        z-index: 1000;
-        display: inline-block;
-        box-shadow: 0 10px 13px -6px rgba(0, 0, 0, 0.2),
-        0px 20px 31px 3px rgba(0, 0, 0, 0.14),
-        0px 8px 38px 7px rgba(0, 0, 0, 0.12);
-        background: #fff;
-        margin: 0 auto;
-    }
-
-    .form-reposition::before{
-        transition: all .4s;
-        background: rgba(134, 132, 132, 0.58);
-        content: '';
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-    }
 
 </style>

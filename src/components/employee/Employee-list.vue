@@ -1,5 +1,9 @@
 <template>
-    <div class="row mt-5">
+
+    <div class="row">
+        <div class="col-md-12 mt-2 mb-2">
+            <button class="btn btn-info float-right" @click.prevent="toggleForm(0)">Add New</button>
+        </div>
         <div class="col-md-12">
             <table class="table table-hover">
                 <thead>
@@ -20,29 +24,53 @@
                     <td>{{em.gender}}</td>
                     <td>{{em.email}}</td>
                     <td>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button ref="rowActions" type="button" class="btn btn-outline-info btn-sm"
-                                    @click="onAction($event)">
-                                <i class="las la-ellipsis-v la-lg"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#" @click.prevent="toggleForm">
-                                    <i class="la las la-edit la-lg text-info"></i> Edit
-                                </a>
-                                <a class="dropdown-item" href="#" @click.prevent="toggleForm">
-                                    <i class="la las la-trash la-lg text-danger"></i>
-                                    Delete
-                                </a>
-                            </div>
+                        <div class="bg-purple text-white rounded-borders row flex-center q-mt-md menu-wrap">
+                            <q-icon name="more_vert"/>
+                            <q-menu>
+                                <q-list class="menu-list">
+                                    <q-item clickable v-close-popup @click.prevent="toggleForm(em.id)">
+                                        <q-item-section side>
+                                            <q-icon name="edit" color="amber"/>
+                                        </q-item-section>
+                                        <q-item-section>
+                                            Edit
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item clickable v-close-popup @click.prevent="deleteConfirm(em.id)">
+                                        <q-item-section side>
+                                            <q-icon name="delete" color="pink"/>
+                                        </q-item-section>
+                                        <q-item-section> Delete</q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </q-menu>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <transition name="scale" mode="in-out">
-            <app-form-comp v-if="isFormOpened" @close="isFormOpened = false" :isOpen="isFormOpened"></app-form-comp>
-        </transition>
+        <q-dialog no-backdrop-dismiss v-model="isFormOpened">
+            <app-form-comp @close="formClosed" :id="selectedId"></app-form-comp>
+        </q-dialog>
+
+        <q-dialog v-model="showDeleteConfirm">
+            <q-card style="width: 300px">
+                <q-card-section class="text-center">
+                    <div class="text-h6">Confirm</div>
+                </q-card-section>
+
+                <q-card-section class="q-pt-none text-center">
+                    Are you sure?
+                </q-card-section>
+                <div class="row mx-0 mb-4 mt-3">
+                    <div class="col-12 d-flex justify-center mx-auto mb-2">
+                        <button type="button" class="btn btn-outline-danger btn-sm mx-1"  @click="deleted">YES</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mx-1" @click="deleted(false)">NO</button>
+                    </div>
+                </div>
+            </q-card>
+        </q-dialog>
 
     </div>
 </template>
@@ -58,29 +86,38 @@
         },
         data() {
             return {
-                isFormOpened: false
+                isFormOpened: false,
+                selectedId: 0,
+                showDeleteConfirm: false
             }
         },
         methods: {
             ...mapActions('employee', {
-                fetchEmployee: 'getEmployees'
+                fetchEmployee: 'getEmployees',
+                deleteEmployee: 'removeEmployee'
             }),
             ...mapGetters('employee', ['employeeData']),
 
-            // show/hide dropdown menu
-            onAction(e) {
-                e.currentTarget.classList.toggle('show')
-                e.currentTarget.nextSibling.classList.toggle('show')
-            },
             // toggle form dialog
-            toggleForm() {
-                // gets menu elements and remove `show` class
-                const el = this.$refs.rowActions;
-                el.forEach(b => {
-                    b.classList.remove('show')
-                    b.nextSibling.classList.remove('show')
-                })
+            toggleForm(id) {
+                this.selectedId = id;
                 this.isFormOpened = !this.isFormOpened;
+            },
+            formClosed() {
+                this.isFormOpened = false;
+                this.selectedId = 0;
+            },
+            deleteConfirm(id) {
+                this.showDeleteConfirm = id > 0;
+                this.selectedId = id;
+            },
+            deleted(isdelete) {
+                if(isdelete) {
+                    this.deleteEmployee(this.selectedId);
+                }
+                this.showDeleteConfirm = false;
+                this.selectedId = 0;
+                // TODO: show a toast
             }
         },
         mounted() {
@@ -93,28 +130,21 @@
                 return this.employeeData()
             }
         }
-
     }
 </script>
 
 <style scoped>
-
-
-    .scale-enter-active{
-        animation: bounce-in .4s forwards cubic-bezier(.59,.73,.23,1.09);
+    .menu-wrap {
+        width: 25px;
+        height: 25px;
+        margin: 0;
+        cursor: pointer
     }
 
-
-    .scale-leave-active{
-        animation: bounce-in .5s reverse cubic-bezier(.59,.73,.23,1.09);
+    .menu-list {
+        min-width: 100px;
+        padding: 5px;
+        overflow: hidden;
     }
 
-    @keyframes bounce-in {
-        0% {
-            transform: translateY(1000px);
-        }
-        100% {
-            transform: translateY(0);
-        }
-    }
 </style>

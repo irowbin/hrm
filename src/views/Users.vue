@@ -1,5 +1,5 @@
 <template>
   <div class="row">
-    <h1>Users</h1>
+   <div class="col-md-12">TODO: app users</div>
   </div>
 </template>
