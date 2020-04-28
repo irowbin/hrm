@@ -97,12 +97,12 @@
                 deleteEmployee: 'removeEmployee'
             }),
             ...mapGetters('employee', ['employeeData']),
-            notify(text, color){
+            notify(text, type){
                 console.log(this.$q)
                 this.$q.notify({
-                    color:color,
                     textColor:'white',
                     icon: 'info',
+                    type: type,
                     message: text,
                     position:'top-right',
                     multiLine: true,
@@ -116,8 +116,9 @@
             },
             formClosed() {
                 this.isFormOpened = false;
+
+                this.notify(`Successfully ${this.selectedId > 0 ? 'Updated': 'Created'}`,'positive');
                 this.selectedId = 0;
-                this.notify('Successfully Updated','teal');
             },
             deleteConfirm(id) {
                 this.showDeleteConfirm = id > 0;
@@ -130,7 +131,7 @@
                 }
                 this.showDeleteConfirm = false;
                 this.selectedId = 0;
-                this.notify('Successfully Deleted','pink');
+                this.notify('Successfully Deleted','negative');
             }
         },
         mounted() {
