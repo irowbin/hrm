@@ -30,7 +30,7 @@ const mutations = {
     },
 
     /**
-     * Updates an employee with modified payload
+     * Adds an employee
      */
     'ADD_EMPLOYEE'(state, payload) {
 
