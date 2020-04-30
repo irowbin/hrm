@@ -65,8 +65,9 @@
                 </q-card-section>
                 <div class="row mx-0 mb-4 mt-3">
                     <div class="col-12 d-flex justify-center mx-auto mb-2">
-                        <button type="button" class="btn btn-outline-danger btn-sm mx-1"  @click="deleted">YES</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm mx-1" @click="deleted(false)">NO</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm mx-1" @click="deleted">YES</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mx-1" @click="deleted(false)">NO
+                        </button>
                     </div>
                 </div>
             </q-card>
@@ -78,6 +79,7 @@
 <script>
     import {mapActions, mapGetters} from 'vuex'
     import FormComp from './form';
+    import {socket} from '../../shared/socket-io.extension';
 
     export default {
         name: 'employee-list',
@@ -88,23 +90,25 @@
             return {
                 isFormOpened: false,
                 selectedId: 0,
-                showDeleteConfirm: false
+                showDeleteConfirm: false,
+                isSelfAction: false
             }
         },
         methods: {
             ...mapActions('employee', {
                 fetchEmployee: 'getEmployees',
-                deleteEmployee: 'removeEmployee'
+                deleteEmployee: 'removeEmployee',
+                // updateEmployee: 'updateEmployee',
+                addEmployee: 'addEmployee'
             }),
             ...mapGetters('employee', ['employeeData']),
-            notify(text, type){
-                console.log(this.$q)
+            notify(text, type) {
                 this.$q.notify({
-                    textColor:'white',
+                    textColor: 'white',
                     icon: 'info',
                     type: type,
                     message: text,
-                    position:'top-right',
+                    position: 'top-right',
                     multiLine: true,
                     timeout: 10000
                 })
@@ -116,8 +120,8 @@
             },
             formClosed(isCancelled) {
                 this.isFormOpened = false;
-                if(!isCancelled)
-                this.notify(`Successfully ${this.selectedId > 0 ? 'Updated': 'Created'}`,'positive');
+                if (!isCancelled)
+                    this.notify(`Successfully ${this.selectedId > 0 ? 'Updated' : 'Created'}`, 'positive');
                 this.selectedId = 0;
             },
             deleteConfirm(id) {
@@ -125,20 +129,44 @@
                 this.selectedId = id;
 
             },
-            deleted(isdelete) {
-                if(isdelete) {
+            deleted(isDelete) {
+                if (isDelete) {
                     this.deleteEmployee(this.selectedId);
-                    this.notify('Successfully Deleted','negative');
+                    this.notify('Successfully Deleted', 'negative');
+                    socket.emit('deleteEmployee', this.selectedId);
+                    this.isisSelfAction = true;
                 }
                 this.showDeleteConfirm = false;
                 this.selectedId = 0;
-
             }
         },
         mounted() {
             // TODO: either fetch from HTTP or use default from local
             this.fetchEmployee();
 
+            socket.on('connect', () => {
+
+                // when an employee get deleted
+                socket.on('employeeDeleted', (id) => {
+                    this.deleteEmployee(id);
+                    this.notify('Successfully Deleted from elsewhere', 'negative');
+                    this.isisSelfAction = false;
+
+                });
+
+                // when an employee being added or updated existing.
+                socket.on('employeeCreatedOrUpdated', (employee) => {
+                    this.notify(`Successfully ${employee.id > 0 ? 'Updated' : 'Created'} from elsewhere`, 'positive');
+                });
+
+                socket.on('employeeCreatedOrUpdated', (employee) => {
+                    if (employee.id > 0) {
+                        this.$store.dispatch('employee/updateEmployee', employee)
+                    } else {
+                        this.addEmployee(employee)
+                    }
+                });
+            })
         },
         computed: {
             employeeList() {

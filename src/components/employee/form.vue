@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="uname" class="col-sm-4 col-form-label">Last Name</label>
+                    <label for="uname" class="col-sm-4 col-form-label">Username</label>
                     <div class="col-sm-8">
                         <input type="text" v-model="employee.account.username" class="form-control form-control-sm"
                                id="uname">
@@ -92,7 +92,7 @@
 
 <script>
     import {mapGetters, mapActions} from 'vuex'
-
+    import {socket} from '../../shared/socket-io.extension';
     export default {
         name: "app-form",
         props: ['id'],
@@ -120,11 +120,16 @@
                 this.$emit('close', isCancelled)
             },
             saveChanges() {
+
+                socket.emit('addOrUpdateEmployee', this.employee);
+
                 if (this.id > 0) {
                     this.updateEmployee(this.employee);
                 } else {
+                    this.employee.id = 0
                     this.addEmployee(this.employee)
                 }
+
                 this.onClose(false);
             },
             initEdit() {
@@ -136,7 +141,9 @@
             }
         },
         mounted() {
-            this.initEdit()
+            this.initEdit();
+
+
         }
     }
 </script>

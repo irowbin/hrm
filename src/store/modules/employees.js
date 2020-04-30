@@ -33,23 +33,26 @@ const mutations = {
      * Adds an employee
      */
     'ADD_EMPLOYEE'(state, payload) {
-
+        const copy = state.employees.slice();
         // find the max ID and add by 1
-        const maxId = Math.max(...state.employees.map(i => i.id)) + 1;
+        const maxId = Math.max(...copy.map(i => i.id)) + 1;
         // employee have new ID
         payload.id = maxId;
-        state.employees.unshift(payload);
+        copy.unshift(payload);
+        state.employees = copy
     },
 
     /**
      * Updates an employee with modified payload
      */
     'UPDATE_EMPLOYEE'(state, payload) {
-
-        const index = state.employees.findIndex(e => e.id === payload.id);
+        const copy = state.employees.slice();
+        const index = copy.findIndex(e => e.id === payload.id);
         if (index > -1) {
-            state.employees[index] = payload
+            copy[index] = payload
         }
+
+        state.employees = copy;
 
         // clear the activated employee object after updated.
         state.employee = null;
