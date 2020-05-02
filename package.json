@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "node socket-io-server.js & vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "node socket-io-server.js & node dist/index.html",
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
