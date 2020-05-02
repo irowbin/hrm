@@ -4,9 +4,8 @@ const path = require('path')
 
 const app = express()
 
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
-server.listen(3000);
+
+
 //here we are configuring dist to serve app files
 app.use('/', serveStatic(path.join(__dirname, '/dist')))
 
@@ -16,8 +15,10 @@ app.get(/.*/, function (req, res) {
 })
 
 const port = process.env.PORT || 8080
-app.listen(port)
+const server = app.listen(port)
 console.log(`app is listening on port: ${port}`)
+
+const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
     socket.on('addOrUpdateEmployee', (data) => {
