@@ -1,4 +1,4 @@
-import {employees} from '../../storage/database'
+import {EmployeeDbContext} from '../../storage/database'
 
 const state = {
     employees: [],
@@ -10,23 +10,15 @@ const mutations = {
      * Initializes employees with payload
      */
     'INIT_EMPLOYEE'(state, payload) {
-        if(state.employees.length> 0) return;
-        const copy = payload.slice();
-        // simulation auto increment of ID as primary KEY
-        copy.forEach((e, index) => {
-            e.id = index + 1;
-            e.firstName = e.firstName + index;
-            e.account.username = e.account.username + index;
-            e.email = e.firstName + index + '@mail.com';
-            e.age = e.age + index;
-        });
-        state.employees = copy
+        if (state.employees.length > 0) return;
+        state.employees = payload
     },
     /**
      * Gets an employee by Id
      */
-    'GET_EMPLOYEE_BY_ID'(state, id) {
-        state.employee = state.employees.find(e => e.id === id);
+    async 'GET_EMPLOYEE_BY_ID'(state, payload) {
+
+        state.employee = payload;
     },
 
     /**
@@ -34,10 +26,6 @@ const mutations = {
      */
     'ADD_EMPLOYEE'(state, payload) {
         const copy = state.employees.slice();
-        // find the max ID and add by 1
-        const maxId = Math.max(...copy.map(i => i.id)) + 1;
-        // employee have new ID
-        payload.id = maxId;
         copy.unshift(payload);
         state.employees = copy
     },
@@ -72,48 +60,52 @@ const mutations = {
 const actions = {
 
     // dispatch and commits `INIT_EMPLOYEE`
-    getEmployees({commit}, payload) {
-        // either supplied payload or a default
-        const data = (payload || employees)
-        commit('INIT_EMPLOYEE', data)
+    async getEmployees({commit}) {
+        const db = new EmployeeDbContext();
+        commit('INIT_EMPLOYEE', await db.getEmployees())
     },
 
     // dispatch and commits `GET_EMPLOYEE_BY_ID`
-    getEmployeeById({commit}, id) {
+    async getEmployeeById({commit}, id) {
         if (id <= 0) {
             throw Error('Id must be greater than zero')
         }
-        commit('GET_EMPLOYEE_BY_ID', id)
+        const db = new EmployeeDbContext();
+        commit('GET_EMPLOYEE_BY_ID', await db.getById(id))
     },
 
     // dispatch and commits `ADD_EMPLOYEE`
-    addEmployee({commit}, payload) {
+    async addEmployee({commit}, payload) {
         if (!payload) {
             throw Error("Payload must be provided to create new employee")
         }
-        commit('ADD_EMPLOYEE', payload);
+        const db = new EmployeeDbContext();
+        const id = await db.addOrUpdateEmployee(payload)
+        commit('ADD_EMPLOYEE', await db.getById(id));
     },
 
     // dispatch and commits `UPDATE_EMPLOYEE`
-    updateEmployee({commit}, payload) {
+    async updateEmployee({commit}, payload) {
         if (!payload) {
             throw Error('Payload must be provided')
         }
         if ((payload.id <= 0)) {
             throw Error('Employee id must be greater than zero')
         }
-        commit('UPDATE_EMPLOYEE', payload)
+        const db = new EmployeeDbContext();
+        const id = await db.addOrUpdateEmployee(payload)
+        commit('UPDATE_EMPLOYEE', await db.getById(id))
     },
 
     // dispatch and commits `REMOVE_EMPLOYEE_BY_ID`
-    removeEmployee({commit}, id) {
+    async removeEmployee({commit}, id) {
         if (id <= 0) {
             throw Error('Id must be greater than zero')
         }
+        const db = new EmployeeDbContext();
+        await db.deleteEmployeeById(id);
         commit('REMOVE_EMPLOYEE_BY_ID', id)
     }
-
-
 }
 
 const getters = {

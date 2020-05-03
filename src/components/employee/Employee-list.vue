@@ -1,7 +1,12 @@
 <template>
 
     <div class="row">
-        <div class="col-md-12 mt-2 mb-2">
+        <div class="col-md-9 mt-2 ">
+            <div class="alert alert-danger">
+              A row will be added initially when there are no records.
+            </div>
+        </div>
+        <div class="col-md-3 mt-2 mb-2">
             <button class="btn btn-info float-right" @click.prevent="toggleForm(0)">Add New</button>
         </div>
         <div class="col-md-12">
@@ -13,6 +18,7 @@
                     <th scope="col">Age</th>
                     <th scope="col">Gender</th>
                     <th scope="col">Email</th>
+                    <th scope="col">Status</th>
                     <th scope="col"></th>
                 </tr>
                 </thead>
@@ -23,6 +29,11 @@
                     <td>{{em.age}}</td>
                     <td>{{em.gender}}</td>
                     <td>{{em.email}}</td>
+                    <td>
+                        <span class="badge badge-info">
+                            {{em.account.status}}
+                        </span>
+                    </td>
                     <td>
                         <div class="bg-purple text-white rounded-borders row flex-center q-mt-md menu-wrap">
                             <q-icon name="more_vert"/>
@@ -129,9 +140,9 @@
                 this.selectedId = id;
 
             },
-            deleted(isDelete) {
+            async deleted(isDelete) {
                 if (isDelete) {
-                    this.deleteEmployee(this.selectedId);
+                    await this.deleteEmployee(this.selectedId);
                     this.notify('Successfully Deleted', 'negative');
                     socket.emit('deleteEmployee', this.selectedId);
                     this.isisSelfAction = true;
@@ -147,24 +158,21 @@
             socket.on('connect', () => {
 
                 // when an employee get deleted
-                socket.on('employeeDeleted', (id) => {
-                    this.deleteEmployee(id);
+                socket.on('employeeDeleted', async (id) => {
+                    await this.deleteEmployee(id);
                     this.notify('Successfully Deleted from elsewhere', 'negative');
                     this.isisSelfAction = false;
 
                 });
 
                 // when an employee being added or updated existing.
-                socket.on('employeeCreatedOrUpdated', (employee) => {
-                    this.notify(`Successfully ${employee.id > 0 ? 'Updated' : 'Created'} from elsewhere`, 'positive');
-                });
-
-                socket.on('employeeCreatedOrUpdated', (employee) => {
+                socket.on('employeeCreatedOrUpdated', async (employee) => {
                     if (employee.id > 0) {
-                        this.$store.dispatch('employee/updateEmployee', employee)
+                        await this.$store.dispatch('employee/updateEmployee', employee)
                     } else {
-                        this.addEmployee(employee)
+                        await this.addEmployee(employee)
                     }
+                    this.notify(`Successfully ${employee.id > 0 ? 'Updated' : 'Created'} from elsewhere`, 'positive');
                 });
             })
         },

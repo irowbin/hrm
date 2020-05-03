@@ -93,6 +93,7 @@
 <script>
     import {mapGetters, mapActions} from 'vuex'
     import {socket} from '../../shared/socket-io.extension';
+
     export default {
         name: "app-form",
         props: ['id'],
@@ -119,31 +120,29 @@
             onClose(isCancelled) {
                 this.$emit('close', isCancelled)
             },
-            saveChanges() {
+            async saveChanges() {
 
                 socket.emit('addOrUpdateEmployee', this.employee);
 
                 if (this.id > 0) {
-                    this.updateEmployee(this.employee);
+                    await this.updateEmployee(this.employee);
                 } else {
                     this.employee.id = 0
-                    this.addEmployee(this.employee)
+                    await this.addEmployee(this.employee)
                 }
 
                 this.onClose(false);
             },
-            initEdit() {
+            async initEdit() {
                 if (this.id <= 0) return;
 
-                this.getEmployeeById(this.id);
+                await this.getEmployeeById(this.id);
                 // lets not mutate the origin
-                this.employee = {...this.getEmployee()};
+                this.employee = this.getEmployee()
             }
         },
         mounted() {
             this.initEdit();
-
-
         }
     }
 </script>
